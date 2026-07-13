@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ricardo Milos Services — легендарный сервис</title>
+<style>
+  :root{
+    --gold:#ffd447;
+    --dark:#111114;
+    --dark2:#1b1b20;
+    --accent:#ff5e3a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;}
+  body{background:var(--dark);color:#fff;line-height:1.6;cursor:none;position:relative;overflow-x:hidden;}
+  a{color:inherit;text-decoration:none;}
+
+  /* CUSTOM CURSOR */
+  #cursor-dancer{
+    position:fixed;top:0;left:0;z-index:9999;
+    font-size:1.6rem;pointer-events:none;
+    transform:translate(-50%,-50%);
+    animation:wiggle .4s ease-in-out infinite alternate;
+    filter:drop-shadow(0 0 6px rgba(255,212,71,.6));
+    transition:font-size .15s ease;
+  }
+  #cursor-dancer.hovering{font-size:2.4rem;}
+  @keyframes wiggle{
+    0%{transform:translate(-50%,-50%) rotate(-18deg);}
+    100%{transform:translate(-50%,-50%) rotate(18deg);}
+  }
+
+  /* BACKGROUND DANCE FIELD */
+  .dancer{
+    position:absolute;pointer-events:none;z-index:0;opacity:.8;
+    animation:shake .45s ease-in-out infinite alternate;
+    user-select:none;
+  }
+  @keyframes shake{
+    0%{transform:rotate(-14deg) translateY(0);}
+    100%{transform:rotate(14deg) translateY(-8px);}
+  }
+
+  /* CLICK BURST */
+  .burst{
+    position:fixed;z-index:9998;pointer-events:none;
+    font-size:1.4rem;opacity:1;
+    animation:burst-fly .6s ease-out forwards;
+  }
+  @keyframes burst-fly{
+    0%{opacity:1;transform:translate(0,0) scale(1) rotate(0deg);}
+    100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.4) rotate(360deg);}
+  }
+
+  /* NAV */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(17,17,20,0.9);backdrop-filter:blur(8px);
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 6%;border-bottom:1px solid #2a2a30;
+  }
+  .logo{font-weight:800;font-size:1.3rem;letter-spacing:1px;}
+  .logo span{color:var(--gold);}
+  nav ul{list-style:none;display:flex;gap:28px;}
+  nav a{font-weight:600;opacity:.85;transition:.2s;}
+  nav a:hover{opacity:1;color:var(--gold);}
+
+  /* HERO */
+  .hero{
+    position:relative;z-index:1;
+    text-align:center;padding:110px 6% 90px;
+    background:radial-gradient(circle at 50% 0%, #2a1a12 0%, var(--dark) 65%);
+  }
+  .hero h1{
+    font-size:clamp(2.2rem,6vw,4rem);font-weight:900;
+    background:linear-gradient(90deg,var(--gold),var(--accent));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    margin-bottom:18px;
+  }
+  .hero p{max-width:620px;margin:0 auto 34px;color:#c9c9d1;font-size:1.15rem;}
+  #hero-photo{
+    width:180px;height:180px;object-fit:cover;border-radius:50%;
+    display:block;margin:0 auto 22px;
+    border:4px solid var(--gold);
+    animation:bob .45s ease-in-out infinite alternate, glow 1s ease-in-out infinite alternate;
+  }
+  @keyframes bob{
+    0%{transform:rotate(-8deg) translateY(0);}
+    100%{transform:rotate(8deg) translateY(-12px);}
+  }
+  @keyframes glow{
+    0%{box-shadow:0 0 12px 2px rgba(255,212,71,.5);}
+    100%{box-shadow:0 0 28px 8px rgba(255,94,58,.7);}
+  }
+  .badge{
+    display:inline-block;background:#221;color:var(--gold);
+    border:1px solid var(--gold);padding:6px 16px;border-radius:30px;
+    font-size:.8rem;letter-spacing:1px;margin-bottom:22px;
+  }
+  .btn{
+    display:inline-block;background:var(--accent);color:#fff;
+    padding:15px 34px;border-radius:8px;font-weight:700;
+    box-shadow:0 8px 24px rgba(255,94,58,.35);transition:.2s;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(255,94,58,.45);}
+  .btn.ghost{background:transparent;border:2px solid var(--gold);color:var(--gold);margin-left:14px;}
+
+  section{position:relative;z-index:1;padding:80px 6%;max-width:1100px;margin:0 auto;}
+  h2{font-size:2rem;text-align:center;margin-bottom:10px;}
+  .sub{text-align:center;color:#9c9ca6;max-width:520px;margin:0 auto 46px;}
+
+  /* SERVICES */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:26px;}
+  .card{
+    background:var(--dark2);border:1px solid #2b2b32;border-radius:16px;
+    padding:32px 26px;transition:.25s;
+  }
+  .card:hover{transform:translateY(-6px);border-color:var(--gold);}
+  .card .icon{font-size:2.4rem;margin-bottom:14px;}
+  .card h3{font-size:1.2rem;margin-bottom:10px;color:var(--gold);}
+  .card p{color:#b6b6bf;font-size:.95rem;}
+  .price{margin-top:16px;font-weight:800;font-size:1.3rem;color:#fff;}
+  .price span{font-size:.8rem;color:#8a8a92;font-weight:400;}
+
+  /* STEPS */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;text-align:center;}
+  .step-num{
+    width:46px;height:46px;border-radius:50%;background:var(--accent);
+    display:flex;align-items:center;justify-content:center;font-weight:800;
+    margin:0 auto 14px;
+  }
+
+  /* TESTIMONIALS */
+  .testi{background:var(--dark2);border-radius:16px;padding:26px;border:1px solid #2b2b32;}
+  .testi p{color:#cfcfd6;font-style:italic;margin-bottom:14px;}
+  .testi .who{font-weight:700;color:var(--gold);font-size:.9rem;}
+
+  /* PRICING CTA */
+  .cta{
+    text-align:center;background:linear-gradient(135deg,#241a12,#1b1b20);
+    border-radius:20px;padding:60px 30px;border:1px solid #332;
+  }
+  .cta h2{margin-bottom:14px;}
+
+  footer{
+    position:relative;z-index:1;
+    text-align:center;padding:40px 6%;color:#6f6f78;font-size:.85rem;
+    border-top:1px solid #2a2a30;
+  }
+  footer .disclaimer{max-width:560px;margin:14px auto 0;font-size:.75rem;color:#55555c;}
+</style>
+</head>
+<body>
+
+<div id="cursor-dancer">🕺</div>
+
+<header>
+  <div class="logo">RICARDO <span>MILOS</span> SERVICES</div>
+  <nav>
+    <ul>
+      <li><a href="#services">Услуги</a></li>
+      <li><a href="#steps">Как это работает</a></li>
+      <li><a href="#testimonials">Отзывы</a></li>
+      <li><a href="#contact">Контакты</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero">
+  <img id="hero-photo" src="dance-weekend-vibe.gif" alt="Ricardo Milos meme">
+  <div class="badge">🔥 №1 ПО ЭНЕРГИИ В ИНТЕРНЕТЕ</div>
+  <h1>Разбуди своего внутреннего Ricardo</h1>
+  <p>Пародийная фан-страница в честь легендарного мема качалки. Тренировки, танцевальная харизма
+     и мотивация уровня "gym time" — без границ, без стеснения, на максималках.</p>
+  <a href="#services" class="btn">Выбрать услугу</a>
+  <a href="#contact" class="btn ghost">Записаться</a>
+</section>
+
+<section id="services">
+  <h2>Услуги</h2>
+  <p class="sub">Каждый пакет заряжен той самой легендарной энергией зала.</p>
+  <div class="grid">
+    <div class="card">
+      <div class="icon">💪</div>
+      <h3>Персональная тренировка</h3>
+      <p>Часовая сессия в стиле "лёгкий понедельник": харизма, повторения, ноль оправданий.</p>
+      <div class="price">4 900 ₸ <span>/ сессия</span></div>
+    </div>
+    <div class="card">
+      <div class="icon">🕺</div>
+      <h3>Танцевальная харизма</h3>
+      <p>Учим двигаться так, будто камера всегда рядом. Уверенность прилагается.</p>
+      <div class="price">3 500 ₸ <span>/ занятие</span></div>
+    </div>
+    <div class="card">
+      <div class="icon">📢</div>
+      <h3>Мотивационный созвон</h3>
+      <p>15 минут чистой энергии перед важным днём: экзамен, дедлайн, свидание.</p>
+      <div class="price">1 500 ₸ <span>/ звонок</span></div>
+    </div>
+    <div class="card">
+      <div class="icon">🎬</div>
+      <h3>Мем-консалтинг</h3>
+      <p>Помогаем командам добавить немного интернет-легенды в презентации и чаты.</p>
+      <div class="price">от 9 900 ₸ <span>/ проект</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="steps">
+  <h2>Как это работает</h2>
+  <p class="sub">Три шага до легендарного уровня энергии.</p>
+  <div class="steps">
+    <div>
+      <div class="step-num">1</div>
+      <h3>Выбираешь пакет</h3>
+      <p>Тренировка, танцы или мотивация — решай сам.</p>
+    </div>
+    <div>
+      <div class="step-num">2</div>
+      <h3>Записываешься</h3>
+      <p>Заполняешь форму ниже, мы на связи в течение дня.</p>
+    </div>
+    <div>
+      <div class="step-num">3</div>
+      <h3>Ловишь энергию</h3>
+      <p>Получаешь заряд харизмы, который останется с тобой надолго.</p>
+    </div>
+  </div>
+</section>
+
+<section id="testimonials">
+  <h2>Отзывы</h2>
+  <p class="sub">Вымышленные, но по духу — максимально настоящие.</p>
+  <div class="grid">
+    <div class="testi">
+      <p>"После танцевального занятия захожу в комнату теперь только под свою музыку."</p>
+      <div class="who">— Даурен, 27 лет</div>
+    </div>
+    <div class="testi">
+      <p>"Мотивационный созвон спас мою сессию. Сдал экзамен с той самой энергией."</p>
+      <div class="who">— Аружан, студентка</div>
+    </div>
+    <div class="testi">
+      <p>"Мем-консалтинг реально поднял настроение всей команде перед дедлайном."</p>
+      <div class="who">— Тимур, тимлид</div>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <h2>Готов поймать легендарную энергию?</h2>
+  <p class="sub" style="margin-bottom:30px;">Оставь контакты — свяжемся и подберём пакет.</p>
+  <a href="mailto:hello@ricardomilos-services.fun" class="btn">hello@ricardomilos-services.fun</a>
+</section>
+
+<footer>
+  <div>© 2026 Ricardo Milos Services — фан-проект, сделан с любовью к мему.</div>
+  <div class="disclaimer">
+    Это неофициальный пародийный сайт, созданный фанатами интернет-культуры.
+    Сайт не связан с реальным Ricardo Milos и не подразумевает его участия или одобрения.
+  </div>
+</footer>
+
+<script>
+  // ---- custom cursor: mini dancer follows mouse ----
+  const cursor = document.getElementById('cursor-dancer');
+  const dancerEmojis = ['🕺','💃'];
+  window.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+  document.querySelectorAll('a, .btn').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+  });
+
+  // ---- dance field: more dancers appear the further you scroll ----
+  let spawnedThreshold = 0;
+  function spawnDancers(count, atY) {
+    for (let i = 0; i < count; i++) {
+      const d = document.createElement('div');
+      d.className = 'dancer';
+      d.textContent = dancerEmojis[Math.random() > 0.5 ? 0 : 1];
+      const side = Math.random() > 0.5 ? 'left' : 'right';
+      d.style[side] = (Math.random() * 9 + 1) + '%';
+      d.style.top = (atY + Math.random() * 500 - 250) + 'px';
+      const growth = Math.min(spawnedThreshold * 0.12, 2.5);
+      d.style.fontSize = (1.3 + Math.random() * 1.5 + growth) + 'rem';
+      d.style.animationDuration = (0.35 + Math.random() * 0.4) + 's';
+      d.style.animationDelay = (Math.random() * 0.3) + 's';
+      document.body.appendChild(d);
+    }
+  }
+  spawnDancers(2, 250);
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY + window.innerHeight;
+    const threshold = Math.floor(scrolled / 350);
+    if (threshold > spawnedThreshold) {
+      const newCount = (threshold - spawnedThreshold) + 1;
+      spawnedThreshold = threshold;
+      spawnDancers(newCount, scrolled);
+    }
+  });
+
+  // ---- click burst: Ricardos fly out when a link is clicked ----
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a, .btn');
+    if (!link) return;
+    const x = e.clientX, y = e.clientY;
+    const count = 8;
+    for (let i = 0; i < count; i++) {
+      const b = document.createElement('div');
+      b.className = 'burst';
+      b.textContent = dancerEmojis[Math.random() > 0.5 ? 0 : 1];
+      const angle = (Math.PI * 2 * i) / count + Math.random() * 0.4;
+      const dist = 80 + Math.random() * 80;
+      b.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+      b.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+      b.style.left = x + 'px';
+      b.style.top = y + 'px';
+      document.body.appendChild(b);
+      setTimeout(() => b.remove(), 650);
+    }
+  });
+</script>
+
+</body>
+</html>
